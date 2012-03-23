@@ -1,0 +1,1 @@
+Simple program to allow interprocess communication between .NET applications and MetaTrader4/5

@@ -1,0 +1,5 @@
+D:\C# Projects\MetaTraderBridge\MetaTraderBridgeNativeClient\obj\x86\Debug\ResolveAssemblyReference.cache
+D:\C# Projects\MetaTraderBridge\MetaTraderBridgeNativeClient\bin\Debug\MetaTraderBridgeNativeClient.exe
+D:\C# Projects\MetaTraderBridge\MetaTraderBridgeNativeClient\bin\Debug\MetaTraderBridgeNativeClient.pdb
+D:\C# Projects\MetaTraderBridge\MetaTraderBridgeNativeClient\obj\x86\Debug\MetaTraderBridgeNativeClient.exe
+D:\C# Projects\MetaTraderBridge\MetaTraderBridgeNativeClient\obj\x86\Debug\MetaTraderBridgeNativeClient.pdb

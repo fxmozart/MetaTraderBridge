@@ -1,0 +1,10 @@
+c:\users\jason\documents\visual studio 2010\Projects\MetaTraderBridge\MetaTraderBridge\obj\Debug\ResolveAssemblyReference.cache
+c:\users\jason\documents\visual studio 2010\Projects\MetaTraderBridge\MetaTraderBridge\bin\Debug\MetaTraderBridge.dll
+c:\users\jason\documents\visual studio 2010\Projects\MetaTraderBridge\MetaTraderBridge\bin\Debug\MetaTraderBridge.pdb
+c:\users\jason\documents\visual studio 2010\Projects\MetaTraderBridge\MetaTraderBridge\obj\Debug\MetaTraderBridge.dll
+c:\users\jason\documents\visual studio 2010\Projects\MetaTraderBridge\MetaTraderBridge\obj\Debug\MetaTraderBridge.pdb
+D:\C# Projects\MetaTraderBridge\MetaTraderBridge\bin\Debug\MetaTraderBridge.dll
+D:\C# Projects\MetaTraderBridge\MetaTraderBridge\bin\Debug\MetaTraderBridge.pdb
+D:\C# Projects\MetaTraderBridge\MetaTraderBridge\obj\Debug\ResolveAssemblyReference.cache
+D:\C# Projects\MetaTraderBridge\MetaTraderBridge\obj\Debug\MetaTraderBridge.dll
+D:\C# Projects\MetaTraderBridge\MetaTraderBridge\obj\Debug\MetaTraderBridge.pdb
