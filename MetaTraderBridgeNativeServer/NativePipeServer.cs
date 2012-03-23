@@ -43,6 +43,22 @@ namespace MetaTraderBridgeNativeServer
 {
     public class NativePipeServer
     {
+        #region global properties
+
+        #endregion
+
+        public static void Create()
+        {
+        }
+
+        public static void Receive()
+        {
+        }
+
+        public static void Send()
+        {
+        }
+
         /// <summary>
         /// P/Invoke the native APIs related to named pipe operations to create 
         /// the named pipe.
