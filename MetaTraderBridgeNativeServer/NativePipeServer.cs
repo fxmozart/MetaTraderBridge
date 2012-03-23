@@ -38,64 +38,58 @@ using System.Security.Permissions;
 using Microsoft.Win32.SafeHandles;
 #endregion
 
-
 namespace MetaTraderBridgeNativeServer
 {
     public class NativePipeServer
     {
         #region global properties
 
+        private static SafePipeHandle _hNamedPipe;
+        internal static SafePipeHandle hNamedPipe
+        {
+            get { return _hNamedPipe; }
+            set { _hNamedPipe = value; }
+        }
+
         #endregion
-
-        public static void Create()
-        {
-        }
-
-        public static void Receive()
-        {
-        }
-
-        public static void Send()
-        {
-        }
 
         /// <summary>
         /// P/Invoke the native APIs related to named pipe operations to create 
         /// the named pipe.
         /// </summary>
-        public static void Run()
+        public static void Create()
         {
-            SafePipeHandle hNamedPipe = null;
+            hNamedPipe = null;
+
+            #region security comments
+            // Prepare the security attributes (the securityAttributes 
+            // parameter in CreateNamedPipe) for the pipe. This is optional. 
+            // If securityAttributes of CreateNamedPipe is null, the named 
+            // pipe gets a default security descriptor and the handle cannot 
+            // be inherited. The ACLs in the default security descriptor of a 
+            // pipe grant full control to the LocalSystem account, (elevated) 
+            // administrators, and the creator owner. They also give only 
+            // read access to members of the Everyone group and the anonymous 
+            // account. However, if you want to customize the security 
+            // permission of the pipe, (e.g. to allow Authenticated Users to 
+            // read from and write to the pipe), you need to create a 
+            // SECURITY_ATTRIBUTES object.
+            #endregion
+            SECURITY_ATTRIBUTES sa = null;
+            sa = CreateNativePipeSecurity();
 
             try
             {
-                #region security comments
-                // Prepare the security attributes (the securityAttributes 
-                // parameter in CreateNamedPipe) for the pipe. This is optional. 
-                // If securityAttributes of CreateNamedPipe is null, the named 
-                // pipe gets a default security descriptor and the handle cannot 
-                // be inherited. The ACLs in the default security descriptor of a 
-                // pipe grant full control to the LocalSystem account, (elevated) 
-                // administrators, and the creator owner. They also give only 
-                // read access to members of the Everyone group and the anonymous 
-                // account. However, if you want to customize the security 
-                // permission of the pipe, (e.g. to allow Authenticated Users to 
-                // read from and write to the pipe), you need to create a 
-                // SECURITY_ATTRIBUTES object.
-                #endregion
-                SECURITY_ATTRIBUTES sa = null;
-                sa = CreateNativePipeSecurity();
-
                 // Create the named pipe.
                 hNamedPipe = NativeMethod.CreateNamedPipe(
-                    ConfigServer.FullPipeName,               // The unique pipe name.
+                    ConfigServer.FullPipeName,          // The unique pipe name.
                     PipeOpenMode.PIPE_ACCESS_DUPLEX,    // The pipe is duplex
                     PipeMode.PIPE_TYPE_MESSAGE |        // Message type pipe 
                     PipeMode.PIPE_READMODE_MESSAGE |    // Message-read mode 
                     PipeMode.PIPE_WAIT,                 // Blocking mode is on
                     PIPE_UNLIMITED_INSTANCES,           // Max server instances
-                    ConfigServer.BufferSize,                 // Output buffer size
-                    ConfigServer.BufferSize,                 // Input buffer size
+                    ConfigServer.BufferSize,            // Output buffer size
+                    ConfigServer.BufferSize,            // Input buffer size
                     NMPWAIT_USE_DEFAULT_WAIT,           // Time-out interval
                     sa                                  // Pipe security attributes
                     );
@@ -119,19 +113,32 @@ namespace MetaTraderBridgeNativeServer
                 }
                 Console.WriteLine("Client is connected.");
 
-                #region hidden receive function
-                /*
-                // 
-                // Receive a request from client.
-                // 
-                #region receive
+            } // end try block
+            catch (Exception ex)
+            {
+                Console.WriteLine("The server throws the error: {0}", ex.Message);
+            }
+            
+        }
 
+        /// <summary>
+        /// P/Invoke the native APIs related to named pipe operations to receive 
+        /// on the named pipe.
+        /// </summary>
+        public static void Receive()
+        {
+            // 
+            // Receive a request from client.
+            // 
+
+            try
+            {
                 string message;
                 bool finishRead = false;
                 bool disconnect = false;
                 do
                 {
-                    byte[] bRequest = new byte[Config.BufferSize];
+                    byte[] bRequest = new byte[ConfigServer.BufferSize];
                     int cbRequest = bRequest.Length, cbRead;
 
                     finishRead = NativeMethod.ReadFile(
@@ -142,8 +149,7 @@ namespace MetaTraderBridgeNativeServer
                         IntPtr.Zero             // Not overlapped 
                         );
 
-                    if (!finishRead &&
-                        Marshal.GetLastWin32Error() != ERROR_MORE_DATA)
+                    if (!finishRead && Marshal.GetLastWin32Error() != ERROR_MORE_DATA)
                     {
                         throw new Win32Exception();
                     }
@@ -155,14 +161,22 @@ namespace MetaTraderBridgeNativeServer
                         cbRead, message);
                 }
                 while (!finishRead && !disconnect);  // Repeat loop if ERROR_MORE_DATA
-                #endregion
-                */
-                #endregion
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("The server throws the error: {0} in Receive()", ex.Message);                
+            }
+            
+        }
 
-                // 
-                // Send a response from server to client.
-                // 
-                #region send
+        /// <summary>
+        /// P/Invoke the native APIs related to named pipe operations to send 
+        /// on the named pipe.
+        /// </summary>
+        public static void Send()
+        {
+            try
+            {
                 bool finishWrite = false;
                 bool disconnect = false;
 
@@ -198,20 +212,25 @@ namespace MetaTraderBridgeNativeServer
                         //    cbWritten, message.TrimEnd('\0'));
                     }
                 } while (!disconnect);
-
-                #endregion // end of send region
-                
+            
                 // Flush the pipe to allow the client to read the pipe's contents 
                 // before disconnecting. Then disconnect the client's connection.
                 NativeMethod.DisconnectNamedPipe(hNamedPipe);
                 NativeMethod.FlushFileBuffers(hNamedPipe);
-
-            } // end try block
+            }
             catch (Exception ex)
             {
-                Console.WriteLine("The server throws the error: {0}", ex.Message);
+                Console.WriteLine("The server throws the error: {0} in Send()", ex.Message);
             }
-            finally
+        }
+
+        /// <summary>
+        /// P/Invoke the native APIs related to named pipe operations to close 
+        /// the named pipe.
+        /// </summary>
+        public static void Close()
+        {
+            try
             {
                 if (hNamedPipe != null)
                 {
@@ -219,7 +238,12 @@ namespace MetaTraderBridgeNativeServer
                     hNamedPipe = null;
                 }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("The server throws the error: {0} in Close()", ex.Message);
+            }
         }
+
 
         #region security
         /// <summary>
@@ -718,6 +742,7 @@ namespace MetaTraderBridgeNativeServer
         }
 
         #endregion
+
 
 
     }

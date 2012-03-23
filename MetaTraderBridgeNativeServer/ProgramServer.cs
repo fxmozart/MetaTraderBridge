@@ -9,9 +9,11 @@ namespace MetaTraderBridgeNativeServer
     {
         static void Main(string[] args)
         {
-            NativePipeServer.Run();
-            //Console.WriteLine("press any key to exit...");
-            //Console.ReadKey();
+            //NativePipeServer.Run();
+            NativePipeServer.Create();
+            NativePipeServer.Send();
+            Console.WriteLine("press any key to exit...");
+            Console.ReadKey();
         }
     }
 }
