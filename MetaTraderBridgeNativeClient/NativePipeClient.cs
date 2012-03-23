@@ -40,15 +40,31 @@ namespace MetaTraderBridgeNativeClient
 {
     class NativePipeClient
     {
+        #region global properties
+
+        private static SafePipeHandle _hNamedPipe;
+        public static SafePipeHandle hNamedPipe
+        {
+            get { return _hNamedPipe; }
+            set { _hNamedPipe = value; }
+        }
+
+        private static string _message;
+        public static string message
+        {
+            get { return _message; }
+            set { _message = value; }
+        }
+
+        #endregion
+
         /// <summary>
         /// P/Invoke the native APIs related to named pipe operations to connect 
         /// to the named pipe.
         /// </summary>
-        public static void Run()
+        public static void CreateClientPipe()
         {
-            #region Open pipe
-            SafePipeHandle hNamedPipe = null;
-
+            hNamedPipe = null;
             try
             {
                 // Try to open the named pipe identified by the pipe name.
@@ -69,6 +85,8 @@ namespace MetaTraderBridgeNativeClient
                     if (!hNamedPipe.IsInvalid)
                     {
                         Console.WriteLine("The named pipe ({0}) is connected.", ConfigClient.FullPipeName);
+                        
+                        ReceiveClientPipe();
                         break;
                     }
 
@@ -83,6 +101,8 @@ namespace MetaTraderBridgeNativeClient
                     {
                         throw new Win32Exception();
                     }
+
+
                 } // end while loop
 
                 // Set the read mode and the blocking mode of the named pipe. In 
@@ -94,52 +114,21 @@ namespace MetaTraderBridgeNativeClient
                     throw new Win32Exception();
                 }
 
-                #region hidden send function
-                /*
-                #region Send
-                //do
-                //{
-                    //string message = ProgramClient.RequestMessage;
+            } // end try block
+            catch (Exception ex)
+            {
+                Console.WriteLine("The NATIVE client throws the error: {0} in CreateClientPipe()", ex.Message);
+            }
+        }
 
-                    //Console.Write("Enter message to send: ");
-
-                    byte[] bRequest = Encoding.Unicode.GetBytes(message);
-                    int cbRequest = bRequest.Length, cbWritten;
-                    //int bRequest = i, cbWritten;
-                    //int cbRequest = Marshal.SizeOf(message);
-
-                    if (!NativeMethod.WriteFile(
-                        hNamedPipe,                 // Handle of the pipe
-                        bRequest,                   // Message to be written
-                        cbRequest,                  // Number of bytes to write
-                        out cbWritten,              // Number of bytes written
-                        IntPtr.Zero                 // Not overlapped
-                        ))
-                {
-                    throw new Win32Exception();
-                }
-
-                    //Console.WriteLine("NATIVE clients send {0} bytes to server: \"{1}\"",
-                    //    cbWritten, message.TrimEnd('\0'));
-                //} while (message != "exit");
-
-                //Console.WriteLine("size of char is {0} ", sizeof(char));
-                //Console.WriteLine("size of int is {0} ", sizeof(int));
-                //Console.WriteLine("size of float is {0} ", sizeof(float));
-                //Console.WriteLine("size of long is {0} ", sizeof(long));
-                //Console.WriteLine("size of double is {0} ", sizeof(double));
-                //Console.WriteLine("size of decimal is {0} ", sizeof(decimal));
-                //Console.WriteLine("size of mystruct is {0} ", Marshal.SizeOf(typeof(MyInt)));
-
-                #endregion
-                */
-                #endregion
-
-
-                #region Receive
-                //
-                // Receive a response from server.
-                // 
+        /// <summary>
+        /// P/Invoke the native APIs related to named pipe operations to receive 
+        /// on the named pipe.
+        /// </summary>
+        public static void ReceiveClientPipe()
+        {
+            try
+            {
                 bool finishRead = false;
                 bool disconnect = false;
 
@@ -156,7 +145,7 @@ namespace MetaTraderBridgeNativeClient
                         IntPtr.Zero             // Not overlapped 
                         );
 
-                    if (!finishRead && 
+                    if (!finishRead &&
                         Marshal.GetLastWin32Error() != ERROR_MORE_DATA)
                     {
                         throw new Win32Exception();
@@ -164,19 +153,75 @@ namespace MetaTraderBridgeNativeClient
 
                     // Unicode-encode the received byte array and trim all the 
                     // '\0' characters at the end.
-                    string message = Encoding.Unicode.GetString(bResponse).TrimEnd('\0');
+                    message = Encoding.Unicode.GetString(bResponse).TrimEnd('\0');
                     Console.WriteLine("NATIVE client receive {0} bytes from server: \"{1}\"",
                         cbRead, message);
                 }
                 while (!disconnect);  // Repeat loop if ERROR_MORE_DATA
-                #endregion
-                
-            } // end try block
+            }
             catch (Exception ex)
             {
-                Console.WriteLine("The NATIVE client throws the error: {0}", ex.Message);
+                Console.WriteLine("The NATIVE client throws the error: {0} in ReceiveClientPipe()", ex.Message);
             }
-            finally
+            
+        }
+
+        /// <summary>
+        /// P/Invoke the native APIs related to named pipe operations to send 
+        /// on the named pipe.
+        /// </summary>
+        public static void SendClientPipe()
+        {
+            try
+            {
+                //do
+                //{
+                //string message = ProgramClient.RequestMessage;
+
+                //Console.Write("Enter message to send: ");
+
+                byte[] bRequest = Encoding.Unicode.GetBytes(message);
+                int cbRequest = bRequest.Length, cbWritten;
+                //int bRequest = i, cbWritten;
+                //int cbRequest = Marshal.SizeOf(message);
+
+                if (!NativeMethod.WriteFile(
+                    hNamedPipe,                 // Handle of the pipe
+                    bRequest,                   // Message to be written
+                    cbRequest,                  // Number of bytes to write
+                    out cbWritten,              // Number of bytes written
+                    IntPtr.Zero                 // Not overlapped
+                    ))
+                {
+                    throw new Win32Exception();
+                }
+
+                //Console.WriteLine("NATIVE clients send {0} bytes to server: \"{1}\"",
+                //    cbWritten, message.TrimEnd('\0'));
+                //} while (message != "exit");
+
+                //Console.WriteLine("size of char is {0} ", sizeof(char));
+                //Console.WriteLine("size of int is {0} ", sizeof(int));
+                //Console.WriteLine("size of float is {0} ", sizeof(float));
+                //Console.WriteLine("size of long is {0} ", sizeof(long));
+                //Console.WriteLine("size of double is {0} ", sizeof(double));
+                //Console.WriteLine("size of decimal is {0} ", sizeof(decimal));
+                //Console.WriteLine("size of mystruct is {0} ", Marshal.SizeOf(typeof(MyInt)));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("The NATIVE client throws the error: {0} in ReceiveClientPipe()", ex.Message);
+            }
+            
+        }
+
+        /// <summary>
+        /// P/Invoke the native APIs related to named pipe operations to close 
+        /// the named pipe.
+        /// </summary>
+        public static void CloseClientPipe()
+        {
+            try
             {
                 if (hNamedPipe != null)
                 {
@@ -184,11 +229,12 @@ namespace MetaTraderBridgeNativeClient
                     hNamedPipe = null;
                 }
             }
-            #endregion
+            catch (Exception ex)
+            {
+                Console.WriteLine("The NATIVE client throws the error: {0} in CloseClientPipe()", ex.Message);
+            }
+        }
 
-            //Console.WriteLine("Press any key to continue...");
-            //Console.ReadKey();
-        } // end static Run()
         
         #region Native API Signatures and Types
 
@@ -656,5 +702,7 @@ namespace MetaTraderBridgeNativeClient
         }
 
         #endregion
+
+
     }
 }

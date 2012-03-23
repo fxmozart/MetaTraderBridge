@@ -9,7 +9,7 @@ namespace MetaTraderBridgeNativeClient
     {
         static void Main(string[] args)
         {
-            NativePipeClient.Run();
+            NativePipeClient.CreateClientPipe();
             //Console.WriteLine("press any key to exit...");
             //Console.ReadKey();
         }

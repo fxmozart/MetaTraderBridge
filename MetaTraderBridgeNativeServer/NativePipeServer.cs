@@ -57,7 +57,7 @@ namespace MetaTraderBridgeNativeServer
         /// P/Invoke the native APIs related to named pipe operations to create 
         /// the named pipe.
         /// </summary>
-        public static void Create()
+        public static void CreateServerPipe()
         {
             hNamedPipe = null;
 
@@ -116,7 +116,7 @@ namespace MetaTraderBridgeNativeServer
             } // end try block
             catch (Exception ex)
             {
-                Console.WriteLine("The server throws the error: {0}", ex.Message);
+                Console.WriteLine("The server throws the error: {0} in CreateServerPipe()", ex.Message);
             }
             
         }
@@ -125,7 +125,7 @@ namespace MetaTraderBridgeNativeServer
         /// P/Invoke the native APIs related to named pipe operations to receive 
         /// on the named pipe.
         /// </summary>
-        public static void Receive()
+        public static void ReceiveServerPipe()
         {
             // 
             // Receive a request from client.
@@ -164,7 +164,7 @@ namespace MetaTraderBridgeNativeServer
             }
             catch (Exception ex)
             {
-                Console.WriteLine("The server throws the error: {0} in Receive()", ex.Message);                
+                Console.WriteLine("The server throws the error: {0} in ReceiveServerPipe()", ex.Message);                
             }
             
         }
@@ -173,7 +173,7 @@ namespace MetaTraderBridgeNativeServer
         /// P/Invoke the native APIs related to named pipe operations to send 
         /// on the named pipe.
         /// </summary>
-        public static void Send()
+        public static void SendServerPipe()
         {
             try
             {
@@ -220,7 +220,7 @@ namespace MetaTraderBridgeNativeServer
             }
             catch (Exception ex)
             {
-                Console.WriteLine("The server throws the error: {0} in Send()", ex.Message);
+                Console.WriteLine("The server throws the error: {0} in SendServerPipe()", ex.Message);
             }
         }
 
@@ -228,7 +228,7 @@ namespace MetaTraderBridgeNativeServer
         /// P/Invoke the native APIs related to named pipe operations to close 
         /// the named pipe.
         /// </summary>
-        public static void Close()
+        public static void CloseServerPipe()
         {
             try
             {
@@ -240,7 +240,7 @@ namespace MetaTraderBridgeNativeServer
             }
             catch (Exception ex)
             {
-                Console.WriteLine("The server throws the error: {0} in Close()", ex.Message);
+                Console.WriteLine("The server throws the error: {0} in CloseServerPipe()", ex.Message);
             }
         }
 

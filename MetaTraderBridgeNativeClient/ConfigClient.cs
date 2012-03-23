@@ -81,7 +81,7 @@ namespace MetaTraderBridgeNativeClient
         public static void CallPipeClient(string quote)
         {
             //args[0] = "-native";
-            NativePipeClient.Run();
+            //NativePipeClient.Run();
             //if (args.Length > 0 && args[0] == "-native")
             //{
             //    // If the command line is "CSNamedPipeClient.exe -native", 
