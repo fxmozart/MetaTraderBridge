@@ -150,11 +150,11 @@ namespace MetaTraderBridgeNativeClient
                     {
                         throw new Win32Exception();
                     }
-
+                    
                     // Unicode-encode the received byte array and trim all the 
                     // '\0' characters at the end.
                     message = Encoding.Unicode.GetString(bResponse).TrimEnd('\0');
-                    Console.WriteLine("NATIVE client receive {0} bytes from server: \"{1}\"",
+                    Console.WriteLine("NATIVE client receive {0} bytes from server: {1}",
                         cbRead, message);
                 }
                 while (!disconnect);  // Repeat loop if ERROR_MORE_DATA

@@ -51,6 +51,13 @@ namespace MetaTraderBridgeNativeServer
             set { _hNamedPipe = value; }
         }
 
+        private static string _message;
+        public static string message
+        {
+            get { return _message; }
+            set { _message = value; }
+        }
+
         #endregion
 
         /// <summary>
@@ -183,7 +190,6 @@ namespace MetaTraderBridgeNativeServer
                 do
                 {
                     Console.Write("Enter message to send to client: ");
-                    string message = "";
                     message = Console.ReadLine();
 
                     if (message.ToLower() == "exit")
